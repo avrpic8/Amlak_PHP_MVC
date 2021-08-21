@@ -2,6 +2,8 @@
 
 namespace System\Router;
 
+use ReflectionMethod;
+
 class Routing{
 
     private array $current_route;
@@ -36,7 +38,34 @@ class Routing{
 
     public function run(){
 
+        $match = $this->match();
+        if(empty($match)){
+            $this->error404();
+        }
 
+        $classPath = str_replace('\\', '/', $match['class']);
+        $path = BASE_DIR . "/app/Http/Controllers/" . $classPath . ".php";
+        if(!file_exists($path)){
+            $this->error404();
+        }
+
+        $class = "\App\Http\Controllers\\" . $match["class"];
+        $object = new $class();
+        if(method_exists($object, $match['method'])){
+            try {
+                $reflection = new ReflectionMethod($class, $match['method']);
+                $parameterCount = $reflection->getNumberOfParameters();
+                if($parameterCount <= count($this->values)){
+                    call_user_func_array(array($object, $match['method']), $this->values);
+                }
+                else{
+                    $this->error404();
+                }
+            } catch (\ReflectionException $e) {}
+        }
+        else{
+            $this->error404();
+        }
     }
 
     public function match(): array{
@@ -60,7 +89,7 @@ class Routing{
 
         // part 1
         if(trim($reservedRouteUrl, '/') === ''){
-            return trim($this->current_route[0], '/') === '' ? true:false;
+            return trim($this->current_route[0], '/') === '';
         }
         // part 2
         $reservedRouteUrlArray = explode('/', $reservedRouteUrl);
@@ -83,7 +112,7 @@ class Routing{
     public function error404(){
 
         http_response_code(404);
-        include __DIR__ . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR . '404.php';
-        exit();
+        return include __DIR__ . DIRECTORY_SEPARATOR . 'View' . DIRECTORY_SEPARATOR . '404.php';
+        //exit();
     }
 }

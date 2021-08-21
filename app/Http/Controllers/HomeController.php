@@ -24,7 +24,7 @@ class HomeController extends Controller {
         echo "update method in HomeController";
     }
 
-    public function destroy(){
+    public function destroy($id){
         echo "destroy method in HomeController";
     }
 

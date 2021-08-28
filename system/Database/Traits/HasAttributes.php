@@ -11,7 +11,7 @@ trait HasAttributes{
             $object->$attribute = $value;
     }
 
-    protected function arrayToAttribute(array $array, $object = null){
+    protected function arrayToAttributes(array $array, $object = null){
         if(!$object){
             $className = get_called_class();
             $object = new $className;
@@ -28,7 +28,7 @@ trait HasAttributes{
     protected function arrayToObject(array $array){
         $collection = [];
         foreach ($array as $value){
-            $object = $this->arrayToAttribute($value);
+            $object = $this->arrayToAttributes($value);
             array_push($collection, $object);
         }
         $this->collection = $collection;

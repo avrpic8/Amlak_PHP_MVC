@@ -67,6 +67,20 @@ trait HasCRUD{
         return $this;
     }
 
+    protected function createMethod($values){
+
+        $values = $this->arrayToCastEncodeValue($values);
+        $this->arrayToAttributes($values, $this);
+        return $this->saveMethod();
+    }
+
+    protected function updateMethod($values){
+
+        $values = $this->arrayToCastEncodeValue($values);
+        $this->arrayToAttributes($values, $this);
+        return $this->saveMethod();
+    }
+
     protected function deleteMethod($id = null){
 
         $object = $this;
@@ -93,6 +107,175 @@ trait HasCRUD{
             return $this->collection;
         }
 
+        return [];
+    }
+
+    protected function whereMethod($attribute, $firstValue, $secondValue = null){
+
+        if($secondValue === null){
+            $condition = $this->getAttributeName($attribute). ' = ?';
+            // `users.id`. = ?
+            $this->addValue($attribute, $firstValue);
+        } else{
+            $condition = $this->getAttributeName($attribute). ' '.$firstValue.' ?';
+            // `users.id`. <= ?
+            $this->addValue($attribute, $secondValue);
+        }
+        $operator = 'AND';
+        $this->setWhere($operator, $condition);
+        $this->setAllowedMethods
+        (
+            ['where', 'whereOr', 'find',
+            'whereIn', 'whereNull', 'whereNotNull',
+            'limit', 'orderBy', 'get',
+            'paginate'
+            ]
+        );
+        return $this;
+    }
+
+    protected function whereOrMethod($attribute, $firstValue, $secondValue = null){
+
+        if($secondValue === null){
+            $condition = $this->getAttributeName($attribute). ' = ?';
+            // `users.id`. = ?
+            $this->addValue($attribute, $firstValue);
+        } else{
+            $condition = $this->getAttributeName($attribute). ' '.$firstValue.' ?';
+            // `users.id`. <= ?
+            $this->addValue($attribute, $secondValue);
+        }
+        $operator = 'OR';
+        $this->setWhere($operator, $condition);
+        $this->setAllowedMethods
+        (
+            ['where', 'whereOr', 'find',
+                'whereIn', 'whereNull', 'whereNotNull',
+                'limit', 'orderBy', 'get',
+                'paginate'
+            ]
+        );
+        return $this;
+    }
+
+    protected function whereNullMethod($attribute){
+
+        $condition = $this->getAttributeName($attribute).' IS NULL';
+        $operator = 'AND';
+        $this->setWhere($operator, $condition);
+        $this->setAllowedMethods
+        (
+            ['where', 'whereOr', 'find',
+                'whereIn', 'whereNull', 'whereNotNull',
+                'limit', 'orderBy', 'get',
+                'paginate'
+            ]
+        );
+        return $this;
+    }
+
+    protected function whereNotNullMethod($attribute){
+
+        $condition = $this->getAttributeName($attribute).' IS NOT NULL';
+        $operator = 'AND';
+        $this->setWhere($operator, $condition);
+        $this->setAllowedMethods
+        (
+            ['where', 'whereOr', 'find',
+                'whereIn', 'whereNull', 'whereNotNull',
+                'limit', 'orderBy', 'get',
+                'paginate'
+            ]
+        );
+        return $this;
+    }
+
+    protected function whereInMethod($attribute, $values){
+
+        if(is_array($values)){
+            $valuesArray = [];
+            foreach ($values as $value){
+                $this->addValue($attribute, $value);
+                array_push($valuesArray, '?');
+            }
+            $operator = 'AND';
+            $condition = $this->getAttributeName($attribute).' IN ('.implode(' , ', $valuesArray).')';
+            $this->setWhere($operator, $condition);
+
+            $this->setAllowedMethods
+            (
+                ['where', 'whereOr', 'find',
+                    'whereIn', 'whereNull', 'whereNotNull',
+                    'limit', 'orderBy', 'get',
+                    'paginate'
+                ]
+            );
+            return $this;
+        }
+    }
+
+    protected function orderByMethod($attribute, $expression){
+
+        $this->setOrderBy($attribute, $expression);
+        $this->setAllowedMethods(['limit', 'orderBy', 'get', 'paginate']);
+        return $this;
+    }
+
+    protected function limitMethod($from, $number){
+
+        $this->setLimit($from, $number);
+        $this->setAllowedMethods(['limit', 'get', 'paginate']);
+        return $this;
+    }
+
+    protected function getMethod($array = null){
+
+        if($this->sql = ''){
+            if(empty($array)){
+                $fields = $this->getTableName().'.*';
+            }
+            else{
+                foreach ($array as $key => $field){
+                    $array[$key] = $this->getAttributeName($field);
+                }
+                $fields = implode(' , ', $array);
+            }
+            $this->setSql("SELECT $fields FROM".$this->getTableName());
+        }
+
+        $stmt = $this->executeQuery();
+        $data = $stmt->fetchAll();
+
+        if($data){
+            $this->arrayToObject($data);
+            return $this->collection;
+        }
+        return [];
+    }
+
+    protected function paginateMethod($perPage){
+
+        $totalRows = $this->getCount();
+        $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+        $totalPages = ceil($totalRows / $perPage);
+        $currentPage = min($currentPage, $totalPages);
+        $currentPage = max($currentPage, $totalPages);
+
+        $currentRow = ($currentPage - 1) * $perPage;
+        $this->setLimit($currentRow, $perPage);
+
+        if($this->sql == ''){
+            $this->setSql("SELECT ".$this->getTableName().".* FROM ".$this->getTableName());
+        }
+
+        $stmt = $this->executeQuery();
+        $data = $stmt->fetchAll();
+
+        if($data){
+            $this->arrayToObject($data);
+            return $this->collection;
+        }
         return [];
     }
 }

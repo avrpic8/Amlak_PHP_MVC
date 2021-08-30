@@ -260,8 +260,7 @@ trait HasCRUD{
 
         $totalPages = ceil($totalRows / $perPage);
         $currentPage = min($currentPage, $totalPages);
-        $currentPage = max($currentPage, $totalPages);
-
+        $currentPage = max($currentPage, 1);
         $currentRow = ($currentPage - 1) * $perPage;
         $this->setLimit($currentRow, $perPage);
 

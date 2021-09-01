@@ -105,7 +105,7 @@ trait HasQueryBuilder{
 
     protected function getCount(){
         $query = '';                // users.*
-        $query .= "SElECT COUNT(".$this->getTableName().".*) FROM ".$this->getTableName();
+        $query .= "SElECT COUNT(*) FROM ".$this->getTableName();
 
 
         if(!empty($this->where)){

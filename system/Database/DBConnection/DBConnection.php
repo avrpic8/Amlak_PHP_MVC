@@ -34,7 +34,7 @@ class DBConnection{
                 DBUSERNAME, DBPASSWORD, $option
             );
         }catch (PDOException $e){
-            echo "Error in database connection" . $e->getMessage();
+            echo "Error in database connection " . $e->getMessage();
             return false;
         }
     }

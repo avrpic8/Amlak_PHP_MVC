@@ -228,9 +228,9 @@ trait HasCRUD{
         return $this;
     }
 
-    protected function getMethod($array = null){
+    protected function getMethod($array = []){
 
-        if($this->sql = ''){
+        if($this->sql == ''){
             if(empty($array)){
                 $fields = $this->getTableName().'.*';
             }
@@ -240,7 +240,7 @@ trait HasCRUD{
                 }
                 $fields = implode(' , ', $array);
             }
-            $this->setSql("SELECT $fields FROM".$this->getTableName());
+            $this->setSql("SELECT $fields FROM ".$this->getTableName());
         }
 
         $stmt = $this->executeQuery();

@@ -3,7 +3,7 @@
 require_once (dirname(__DIR__) . "/vendor/autoload.php");
 require_once ("../bootstrap/app.php");
 
-echo "<br/><br/> current rout: " . CURRENT_ROUTE;
+/*echo "<br/><br/> current rout: " . CURRENT_ROUTE;
 
 $post_value_test = '
 
@@ -14,4 +14,4 @@ $post_value_test = '
 </form>
 ';
 
-echo $post_value_test;
+echo $post_value_test;*/

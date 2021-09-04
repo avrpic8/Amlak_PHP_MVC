@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Http\Models;
 
 use System\Database\ORM\Model;
 
@@ -11,6 +11,6 @@ class Category extends Model {
     protected $casts = [];
 
     public function posts(){
-        return $this->hasMany('\App\Post','cat_id', 'id');
+        return $this->hasMany('\App\Http\Models\Post','cat_id', 'id');
     }
 }

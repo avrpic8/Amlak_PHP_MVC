@@ -4,20 +4,20 @@ namespace App\Http\Models;
 
 use System\Database\ORM\Model;
 
-class Role extends Model {
+class User extends Model {
 
-    protected $table = "roles";
-    protected $fillable = ['name'];
+    protected $table = "users";
+    protected $fillable = ['username'];
     protected $casts = [];
 
-    public function users(){
+    public function roles(){
         return $this->belongsToMany
         (
-            '\App\Models\User',
+            '\App\Http\Models\Role',
             'user_role',
             'id',
-            'role_id',
             'user_id',
+            'role_id',
             'id'
         );
     }

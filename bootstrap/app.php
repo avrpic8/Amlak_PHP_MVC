@@ -2,8 +2,8 @@
 
 // dd helper function
 
-use App\Category;
-use App\Post;
+use App\Http\Models\Category;
+use App\Http\Models\Post;
 
 function dd($variable){
 

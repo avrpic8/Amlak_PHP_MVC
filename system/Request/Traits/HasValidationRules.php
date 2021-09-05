@@ -83,7 +83,7 @@ trait HasValidationRules{
 
         if($this->checkFieldExist($name)){
             if($this->request[$name] >= $count && $this->checkFirstError($name)){
-                $this->setError($name, "max length equal or lower than $count character");
+                $this->setError($name, "max number equal or lower than $count character");
             }
         }
     }
@@ -92,7 +92,58 @@ trait HasValidationRules{
 
         if($this->checkFieldExist($name)){
             if($this->request[$name] <= $count && $this->checkFirstError($name)){
-                $this->setError($name, "min length equal or upper than $count character");
+                $this->setError($name, "min number equal or upper than $count character");
+            }
+        }
+    }
+
+    protected function required($name){
+
+        if((!isset($this->request[$name]) or $this->request[$name] === '') and $this->checkFirstError($name)){
+            $this->setError($name, "$name is required");
+        }
+    }
+
+    protected function number($name){
+
+        if($this->checkFieldExist($name)){
+            if(!is_numeric($this->request[$name]) and $this->checkFirstError($name)){
+                $this->setError($name, "$name must be number format");
+            }
+        }
+    }
+
+    protected function date($name){
+
+        if($this->checkFieldExist($name)){
+            if(!preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $this->request[$name])
+                and $this->checkFirstError($name)){
+                $this->setError($name, "$name must be date format");
+            }
+        }
+    }
+
+    protected function email($name){
+
+        if($this->checkFieldExist($name)){
+            if(!filter_var($this->request[$name], FILTER_VALIDATE_EMAIL) and $this->checkFirstError($name)){
+                $this->setError($name, "$name must be email format");
+            }
+        }
+    }
+
+    protected function existsIn($name, $table, $field = "id"){
+
+        if($this->checkFieldExist($name)){
+            if($this->checkFirstError($name)){
+                $value = $this->$name;
+                $sql = "SELECT COUNT(*) FROM $table WHERE $field = ?";
+                $stmt = DBConnection::getDBConnectionInstance()->prepare($sql);
+                $stmt->execute([$value]);
+                $result = $stmt->fetchColumn();
+                if($result == 0 or $result === false){
+                    $this->setError($name, "$name not already exist");
+                }
             }
         }
     }

@@ -10,7 +10,7 @@ class Request{
 
     use HasFileValidationRules, HasRunValidation, HasValidationRules;
 
-    protected $errorExist = false;
+    protected bool $errorExist = false;
     protected $request;
     protected $files = null;
     protected $errorVariablesName = [];

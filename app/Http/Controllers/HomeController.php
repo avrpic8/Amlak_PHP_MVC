@@ -10,6 +10,7 @@ class HomeController extends Controller {
 
     public function create(){
         echo "create method in HomeController";
+        //view('app.index');
     }
 
     public function store(){

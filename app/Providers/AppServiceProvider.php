@@ -6,7 +6,7 @@ use App\Http\Models\Post;
 use App\Http\Models\User;
 use System\View\Composer;
 
-class AppServiceProvider
+class AppServiceProvider extends Provider
 {
     public function boot()
     {

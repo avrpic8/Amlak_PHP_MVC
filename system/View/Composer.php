@@ -6,7 +6,7 @@ class Composer{
 
     private static $instace;
     private $vars = [];
-    private $viewArray;
+    private $viewArray = [];
 
     private function __construct(){}
 

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 class HomeController extends Controller {
 
     public function index(){
-        //echo "index method in HomeController";
+        echo "index method in HomeController";
     }
 
     public function create(){

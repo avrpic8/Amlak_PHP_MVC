@@ -15,7 +15,7 @@ class Config{
 
     private function initialConfigArrays(){
 
-        $configPath = dirname(__DIR__, 2) . '/config';
+        $configPath = dirname(__DIR__, 2) . '/config/';
         foreach (glob($configPath . '*.php') as $fileName){
             $config = require $fileName;
             $key = $fileName;
@@ -27,6 +27,34 @@ class Config{
         $this->initialDefaultValues();
         $this->config_dot_array = $this->arrayDot($this->config_nested_array);
     }
+
+    private function initialDefaultValues(){
+
+        $temp = str_replace(
+            $this->config_nested_array['app']['BASE_URL'],
+            '',
+            explode('?', $_SERVER['REQUEST_URI'])[0]);
+
+
+        $temp === "/" ? $temp = "" : $temp = substr($temp, 1);
+        $this->config_nested_array['app']['CURRENT_ROUTE'] = $temp;
+    }
+
+    private function arrayDot($array, $return_array = array(), $return_key = ''){
+
+        foreach ($array as $key => $value){
+            if(is_array($value))
+            {
+                $return_array = array_merge($return_array, $this->arrayDot($value, $return_array, $return_key . $key . '.'));
+            }
+            else{
+                $return_array[$return_key . $key] = $value;
+            }
+        }
+        return $return_array;
+    }
+
+
 
     private static function getInstance(){
 
